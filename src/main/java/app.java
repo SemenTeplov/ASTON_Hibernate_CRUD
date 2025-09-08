@@ -1,5 +1,6 @@
 import models.User;
 
+import repositories.Repository;
 import repositories.UsersRepository;
 
 import java.time.LocalDate;
@@ -8,7 +9,7 @@ import java.util.Scanner;
 public class app {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-        UsersRepository repository = new UsersRepository();
+        Repository repository = new UsersRepository();
 
         System.out.println("Выберите действие(1 - создать, 2 - прочитать, 3 - обновить, 4 - удалить): ");
         String input = scan.next();

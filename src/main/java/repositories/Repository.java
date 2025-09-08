@@ -1,8 +1,10 @@
 package repositories;
 
-public interface Repository<T> {
-    void create(T t);
-    T read(int id);
-    void update(T t);
-    void delete(T t);
+import models.User;
+
+public interface Repository {
+    void create(User user);
+    User read(int id);
+    void update(User user);
+    void delete(User user);
 }

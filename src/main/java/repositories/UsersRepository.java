@@ -10,7 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 @Slf4j
-public class UsersRepository implements Repository<User> {
+public class UsersRepository implements Repository {
     private final Session session;
     private final Transaction transaction;
 
