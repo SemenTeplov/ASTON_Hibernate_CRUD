@@ -9,6 +9,8 @@ import models.User;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import java.util.Optional;
+
 @Slf4j
 public class UsersRepository implements Repository {
     private final Session session;
@@ -21,10 +23,16 @@ public class UsersRepository implements Repository {
 
     @Override
     public void create(User user) {
-        session.save(user);
-        transaction.commit();
+        Optional<User> opUser = Optional.ofNullable(user);
 
-        log.info("User created");
+        if (opUser.isPresent()) {
+            session.save(user);
+            transaction.commit();
+
+            log.info("User created");
+        } else {
+            log.warn("Argument is null");
+        }
     }
 
     @Override
@@ -41,17 +49,29 @@ public class UsersRepository implements Repository {
 
     @Override
     public void update(User user) {
-        session.update(user);
-        transaction.commit();
+        Optional<User> opUser = Optional.ofNullable(user);
 
-        log.info("User updated");
+        if (opUser.isPresent()) {
+            session.update(user);
+            transaction.commit();
+
+            log.info("User updated");
+        } else {
+            log.warn("Argument is null");
+        }
     }
 
     @Override
     public void delete(User user) {
-        session.delete(user);
-        transaction.commit();
+        Optional<User> opUser = Optional.ofNullable(user);
 
-        log.info("User deleted");
+        if (opUser.isPresent()) {
+            session.delete(user);
+            transaction.commit();
+
+            log.info("User deleted");
+        } else {
+            log.warn("Argument is null");
+        }
     }
 }
