@@ -1,6 +1,7 @@
 package repositories;
 
 import database.Datebase;
+import exceptions.NullFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,15 +25,12 @@ public class UsersRepository implements Repository {
     @Override
     public void create(User user) {
         Optional<User> opUser = Optional.ofNullable(user);
+        opUser.orElseThrow(NullFoundException::new);
 
-        if (opUser.isPresent()) {
-            session.save(user);
-            transaction.commit();
+        session.save(opUser.get());
+        transaction.commit();
 
-            log.info("User created");
-        } else {
-            log.warn("Argument is null");
-        }
+        log.info("User created");
     }
 
     @Override
@@ -50,28 +48,22 @@ public class UsersRepository implements Repository {
     @Override
     public void update(User user) {
         Optional<User> opUser = Optional.ofNullable(user);
+        opUser.orElseThrow(NullFoundException::new);
 
-        if (opUser.isPresent()) {
-            session.update(user);
-            transaction.commit();
+        session.update(opUser.get());
+        transaction.commit();
 
-            log.info("User updated");
-        } else {
-            log.warn("Argument is null");
-        }
+        log.info("User updated");
     }
 
     @Override
     public void delete(User user) {
         Optional<User> opUser = Optional.ofNullable(user);
+        opUser.orElseThrow(NullFoundException::new);
 
-        if (opUser.isPresent()) {
-            session.delete(user);
-            transaction.commit();
+        session.delete(opUser.get());
+        transaction.commit();
 
-            log.info("User deleted");
-        } else {
-            log.warn("Argument is null");
-        }
+        log.info("User deleted");
     }
 }
