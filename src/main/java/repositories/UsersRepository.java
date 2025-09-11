@@ -1,16 +1,14 @@
 package repositories;
 
 import database.Datebase;
-import exceptions.NullFoundException;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import models.User;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-
-import java.util.Optional;
 
 @Slf4j
 public class UsersRepository implements Repository {
@@ -23,11 +21,8 @@ public class UsersRepository implements Repository {
     }
 
     @Override
-    public void create(User user) {
-        Optional<User> opUser = Optional.ofNullable(user);
-        opUser.orElseThrow(NullFoundException::new);
-
-        session.save(opUser.get());
+    public void create(@NonNull User user) {
+        session.save(user);
         transaction.commit();
 
         log.info("User created");
@@ -46,22 +41,16 @@ public class UsersRepository implements Repository {
     }
 
     @Override
-    public void update(User user) {
-        Optional<User> opUser = Optional.ofNullable(user);
-        opUser.orElseThrow(NullFoundException::new);
-
-        session.update(opUser.get());
+    public void update(@NonNull User user) {
+        session.update(user);
         transaction.commit();
 
         log.info("User updated");
     }
 
     @Override
-    public void delete(User user) {
-        Optional<User> opUser = Optional.ofNullable(user);
-        opUser.orElseThrow(NullFoundException::new);
-
-        session.delete(opUser.get());
+    public void delete(@NonNull User user) {
+        session.delete(user);
         transaction.commit();
 
         log.info("User deleted");
