@@ -14,6 +14,8 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "Users")
 public class User {
+    public User() {}
+
     @Id
     private int id;
 

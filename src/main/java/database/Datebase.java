@@ -14,15 +14,13 @@ import org.hibernate.service.ServiceRegistry;
 public class Datebase {
     private Datebase() {}
 
+    private static Configuration configuration = new Configuration().configure().addAnnotatedClass(User.class);
+    private static ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+    private static SessionFactory sf = configuration.buildSessionFactory(sr);
+
     public static Session getSession() {
-        Configuration configuration = new Configuration().configure().addAnnotatedClass(User.class);
+        log.info("Session opened");
 
-        try (ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build()) {
-            SessionFactory sf = configuration.buildSessionFactory(sr);
-
-            log.info("Session opened");
-
-            return sf.openSession();
-        }
+        return sf.openSession();
     }
 }

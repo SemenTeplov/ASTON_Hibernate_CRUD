@@ -12,18 +12,14 @@ import org.hibernate.Transaction;
 
 @Slf4j
 public class UsersRepository implements Repository {
-    private final Session session;
-    private final Transaction transaction;
-
-    public UsersRepository() {
-        session = Datebase.getSession();
-        transaction = session.beginTransaction();
-    }
+    private Session session;
+    private Transaction transaction;
 
     @Override
     public void create(@NonNull User user) {
+        open();
         session.save(user);
-        transaction.commit();
+        close();
 
         log.info("User created");
     }
@@ -32,8 +28,9 @@ public class UsersRepository implements Repository {
     public User read(int id) {
         User user;
 
+        open();
         user = session.get(User.class, id);
-        transaction.commit();
+        close();
 
         log.info("Got user");
 
@@ -42,17 +39,29 @@ public class UsersRepository implements Repository {
 
     @Override
     public void update(@NonNull User user) {
+        open();
         session.update(user);
-        transaction.commit();
+        close();
 
         log.info("User updated");
     }
 
     @Override
     public void delete(@NonNull User user) {
+        open();
         session.delete(user);
-        transaction.commit();
+        close();
 
         log.info("User deleted");
+    }
+
+    private void open() {
+        session = Datebase.getSession();
+        transaction = session.beginTransaction();
+    }
+
+    private void close() {
+        transaction.commit();
+        session.close();
     }
 }
