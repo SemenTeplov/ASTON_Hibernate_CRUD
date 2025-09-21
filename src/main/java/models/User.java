@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @Table(name = "Users")
 public class User {
     @Id
-    private int id;
+    private Integer id;
 
     @Column
     private String name;
@@ -26,7 +26,7 @@ public class User {
     private String email;
 
     @Column
-    private int age;
+    private Integer age;
 
     @Column(name = "created_at")
     private LocalDate date;

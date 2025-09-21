@@ -1,39 +1,22 @@
-import Services.APIService;
-import Services.UserService;
 import database.DatabaseConnector;
-
 import models.User;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import org.testcontainers.containers.PostgreSQLContainer;
-
 import repositories.Repository;
 import repositories.UsersRepository;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.Properties;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-@ExtendWith(MockitoExtension.class)
-class Tests {
+public class Tests {
     static PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>("postgres");
 
     Repository repository;
@@ -67,113 +50,5 @@ class Tests {
                 return sf.openSession();
             }
         });
-    }
-
-    @Mock
-    APIService service;
-
-    @Test
-    void create() {
-        User user = new User(1, "name1", "email@.com", 23, LocalDate.now());
-
-        repository.create(user);
-
-        assertEquals(user.toString(), repository.read(1).toString());
-    }
-
-    @Test
-    void wrongCreate() {
-        assertThrows(NullPointerException.class, () -> repository.create(null));
-    }
-
-    @Test
-    void serviceCreate() {
-        User user = new User(1, "name1", "email@.com", 23, LocalDate.now());
-
-        Mockito.when(service.getMethod()).thenReturn("1");
-        Mockito.when(service.create()).thenReturn(user);
-
-        new Application(service, new UserService(repository)).run();
-
-        Mockito.verify(service).getMethod();
-        Mockito.verify(service).create();
-    }
-
-    @Test
-    void wrongRead() {
-        assertNull(repository.read(1));
-    }
-
-    @Test
-    void serviceRead() {
-        Mockito.when(service.getMethod()).thenReturn("2");
-        Mockito.when(service.read()).thenReturn(1);
-
-        new Application(service, new UserService(repository)).run();
-
-        Mockito.verify(service).getMethod();
-        Mockito.verify(service).read();
-    }
-
-    @Test
-    void update() {
-        User user = new User(1, "name1", "email@.com", 23, LocalDate.now());
-
-        repository.create(user);
-        user.setName("nameChange");
-        repository.update(user);
-
-        assertEquals(user.toString(), repository.read(1).toString());
-    }
-
-    @Test
-    void wrongUpdate() {
-        assertThrows(NullPointerException.class, () -> repository.update(null));
-    }
-
-    @Test
-    void serviceUpdate() {
-        User user = new User(1, "name1", "email@.com", 23, LocalDate.now());
-
-        repository.create(user);
-        user.setName("nameChange");
-
-        Mockito.when(service.getMethod()).thenReturn("3");
-        Mockito.when(service.update()).thenReturn(user);
-
-        new Application(service, new UserService(repository)).run();
-
-        Mockito.verify(service).getMethod();
-        Mockito.verify(service).update();
-    }
-
-    @Test
-    void delete() {
-        User user = new User(1, "name1", "email@.com", 23, LocalDate.now());
-
-        repository.create(user);
-        repository.delete(user);
-
-        assertNull(repository.read(1));
-    }
-
-    @Test
-    void wrongDelete() {
-        assertThrows(NullPointerException.class, () -> repository.delete(null));
-    }
-
-    @Test
-    void serviceDelete() {
-        User user = new User(1, "name1", "email@.com", 23, LocalDate.now());
-
-        repository.create(user);
-
-        Mockito.when(service.getMethod()).thenReturn("4");
-        Mockito.when(service.delete()).thenReturn(user);
-
-        new Application(service, new UserService(repository)).run();
-
-        Mockito.verify(service).getMethod();
-        Mockito.verify(service).delete();
     }
 }

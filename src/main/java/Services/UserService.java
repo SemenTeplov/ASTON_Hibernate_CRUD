@@ -1,12 +1,9 @@
 package Services;
 
-import database.PostgreSQLConnector;
-
 import lombok.AllArgsConstructor;
 import models.User;
 
 import repositories.Repository;
-import repositories.UsersRepository;
 
 @AllArgsConstructor
 public class UserService {
