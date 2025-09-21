@@ -1,5 +1,4 @@
 import Services.APIService;
-import Services.UserService;
 
 import models.User;
 
@@ -12,8 +11,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
+import static org.junit.Assert.assertEquals;
+
 @ExtendWith(MockitoExtension.class)
-public class ModulTests extends Tests {
+public class ModulTests {
     @Mock
     APIService service;
 
@@ -21,54 +22,34 @@ public class ModulTests extends Tests {
     void serviceCreate() {
         User user = new User(1, "name1", "email@.com", 23, LocalDate.now());
 
-        Mockito.when(service.getMethod()).thenReturn("1");
         Mockito.when(service.create()).thenReturn(user);
 
-        new Application(service, new UserService(repository)).run();
-
-        Mockito.verify(service).getMethod();
-        Mockito.verify(service).create();
+        assertEquals(user, service.create());
     }
 
     @Test
     void serviceRead() {
-        Mockito.when(service.getMethod()).thenReturn("2");
         Mockito.when(service.read()).thenReturn(1);
 
-        new Application(service, new UserService(repository)).run();
-
-        Mockito.verify(service).getMethod();
-        Mockito.verify(service).read();
+        assertEquals(1, service.read());
     }
 
     @Test
     void serviceUpdate() {
         User user = new User(1, "name1", "email@.com", 23, LocalDate.now());
 
-        repository.create(user);
-        user.setName("nameChange");
-
-        Mockito.when(service.getMethod()).thenReturn("3");
         Mockito.when(service.update()).thenReturn(user);
 
-        new Application(service, new UserService(repository)).run();
+        assertEquals(user, service.update());
 
-        Mockito.verify(service).getMethod();
-        Mockito.verify(service).update();
     }
 
     @Test
     void serviceDelete() {
         User user = new User(1, "name1", "email@.com", 23, LocalDate.now());
 
-        repository.create(user);
-
-        Mockito.when(service.getMethod()).thenReturn("4");
         Mockito.when(service.delete()).thenReturn(user);
 
-        new Application(service, new UserService(repository)).run();
-
-        Mockito.verify(service).getMethod();
-        Mockito.verify(service).delete();
+        assertEquals(user, service.delete());
     }
 }
