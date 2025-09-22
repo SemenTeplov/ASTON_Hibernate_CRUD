@@ -9,13 +9,12 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
+
 import repositories.Repository;
 import repositories.UsersRepository;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Properties;
 
@@ -25,20 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class IntegrationTests {
     static PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>("postgres");
 
-    Repository repository;
+    static Repository repository;
 
     @BeforeAll
     static void beforeAll() {
         postgresql.start();
-    }
 
-    @AfterAll
-    static void afterAll() {
-        postgresql.stop();
-    }
-
-    @BeforeEach
-    void setUp() throws SQLException {
         Properties properties = new Properties();
         properties.put(Environment.DRIVER, "org.postgresql.Driver");
         properties.put(Environment.URL, postgresql.getJdbcUrl());
@@ -58,12 +49,19 @@ class IntegrationTests {
         });
     }
 
+    @AfterAll
+    static void afterAll() {
+        postgresql.stop();
+    }
+
     @Test
     void create() {
         User user = new User(1, "name1", "email@.com", 23, LocalDate.now());
 
         repository.create(user);
         assertEquals(user.toString(), repository.read(1).toString());
+
+        repository.delete(user);
     }
 
     @Test
@@ -85,6 +83,8 @@ class IntegrationTests {
         repository.update(user);
 
         assertEquals(user.toString(), repository.read(1).toString());
+
+        repository.delete(user);
     }
 
     @Test
