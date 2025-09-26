@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import repositories.Repository;
 
 import java.time.LocalDate;
@@ -94,6 +95,50 @@ public class ModulTests {
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
 
         Mockito.when(userService.delete(captor.capture())).thenReturn(true);
+
+        userService.delete(user);
+
+        assertEquals(user, captor.getValue());
+    }
+
+    @Test
+    void repositoryCreateCheckArgs() {
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+
+        Mockito.when(repository.create(captor.capture())).thenReturn(true);
+
+        userService.create(user);
+
+        assertEquals(user, captor.getValue());
+    }
+
+    @Test
+    void repositoryReadCheckArgs() {
+        ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
+
+        Mockito.when(repository.read(captor.capture())).thenReturn(user);
+
+        userService.read(1);
+
+        assertEquals(Integer.valueOf(1), captor.getValue());
+    }
+
+    @Test
+    void repositoryUpdateCheckArgs() {
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+
+        Mockito.when(repository.update(captor.capture())).thenReturn(true);
+
+        userService.update(user);
+
+        assertEquals(user, captor.getValue());
+    }
+
+    @Test
+    void repositoryDeleteCheckArgs() {
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+
+        Mockito.when(repository.delete(captor.capture())).thenReturn(true);
 
         userService.delete(user);
 
