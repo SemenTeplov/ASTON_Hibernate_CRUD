@@ -1,12 +1,11 @@
-import crud.dal.UserRepository;
 import crud.controller.UserController;
+import crud.dal.Repository;
 import crud.service.UserService;
 import crud.storage.UserStorage;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.junit.jupiter.api.extension.MediaType;
 
 import org.mockito.Mockito;
@@ -28,12 +27,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextHierarchy(@ContextConfiguration(classes = IntegrationTestes.Config.class))
 public class IntegrationTestes {
+    String json = "{\"id\":3,\"name\":\"name\",\"email\":\"some@mail.com\",\"age\":43,\"created_at\":\"2025-09-25\"}";
+
     @Autowired
     WebApplicationContext wac;
 
@@ -62,8 +63,8 @@ public class IntegrationTestes {
         }
 
         @Bean
-        public UserRepository userRepository() {
-            return Mockito.mock(UserRepository.class);
+        public Repository userRepository() {
+            return Mockito.mock(Repository.class);
         }
 
         @Bean
@@ -87,7 +88,7 @@ public class IntegrationTestes {
     void createTest() throws Exception {
         mockMvc.perform(post("/users")
                         .contentType(String.valueOf(MediaType.APPLICATION_JSON_UTF_8))
-                        .content("{\"id\":3,\"name\":\"name\",\"email\":\"some@mail.com\",\"age\":43,\"created_at\":\"2025-09-25\"}"))
+                        .content(json))
                 .andExpect(status().isCreated());
     }
 
@@ -101,7 +102,7 @@ public class IntegrationTestes {
     void updateTest() throws Exception {
         mockMvc.perform(put("/users")
                         .contentType(String.valueOf(MediaType.APPLICATION_JSON_UTF_8))
-                        .content("{\"id\":3,\"name\":\"name\",\"email\":\"some@mail.com\",\"age\":43,\"created_at\":\"2025-09-25\"}"))
+                        .content(json))
                 .andExpect(status().isOk());
     }
 
@@ -109,7 +110,7 @@ public class IntegrationTestes {
     void deleteTest() throws Exception {
         mockMvc.perform(delete("/users")
                         .contentType(String.valueOf(MediaType.APPLICATION_JSON_UTF_8))
-                        .content("{\"id\":3,\"name\":\"name\",\"email\":\"some@mail.com\",\"age\":43,\"created_at\":\"2025-09-25\"}"))
+                        .content(json))
                 .andExpect(status().isOk());
     }
 }
