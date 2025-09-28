@@ -1,53 +1,80 @@
+import com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.HttpStatus;
+
 import crud.App;
-import crud.controller.UserController;
-import crud.dal.Repository;
 import crud.model.User;
-import crud.service.UserService;
+
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.MediaType;
+
+import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@Testcontainers
-@SpringBootTest(classes = App.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = App.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class IntegrationWithDbTests {
-    @Container
-    static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres")
-            .withDatabaseName("db_crud")
-            .withUsername("demopostgres");
-
-    @DynamicPropertySource
-    static void register(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", container::getJdbcUrl);
-        registry.add("spring.datasource.username", container::getUsername);
-        registry.add("spring.datasource.password", container::getPassword);
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
-    }
+    User user = new User(1, "name", "email@mail.com", 32, LocalDate.now());
 
     @Autowired
-    UserService service;
+    TestRestTemplate restTemplate;
 
-    User user = new User(1, "name", "mail", 40, LocalDate.now());
+    @LocalServerPort
+    int port;
 
     @Test
-    public void createTest() throws Exception {
-        Assert.assertEquals(user, service.create(user));
+    public void testCreate() {
+        ResponseEntity<User> response = restTemplate.postForEntity(getRootUrl() + "/users", user, User.class);
+
+        Assert.assertEquals(HttpStatus.SC_CREATED, response.getStatusCode().value());
+        Assert.assertEquals(user, response.getBody());
+
+        User getUser = restTemplate.getForObject(getRootUrl() + "/users/" + user.getId(), User.class);
+
+        Assert.assertEquals(user, getUser);
+    }
+
+    @Test
+    public void testUpdate() {
+        ResponseEntity<User> response = restTemplate.postForEntity(getRootUrl() + "/users", user, User.class);
+
+        Assert.assertEquals(HttpStatus.SC_CREATED, response.getStatusCode().value());
+        Assert.assertEquals(user, response.getBody());
+
+        user.setName("change name");
+        user.setAge(33);
+        restTemplate.put(getRootUrl() + "/users", user);
+
+        User updateUser = restTemplate.getForObject(getRootUrl() + "/users/" + user.getId(), User.class);
+
+        Assert.assertEquals(user, updateUser);
+    }
+
+    @Test
+    public void testDelete() {
+        ResponseEntity<User> response = restTemplate.postForEntity(getRootUrl() + "/users", user, User.class);
+
+        Assert.assertEquals(HttpStatus.SC_CREATED, response.getStatusCode().value());
+        Assert.assertEquals(user, response.getBody());
+
+        restTemplate.delete(getRootUrl() + "/users", user);
+
+        User deleteUser = restTemplate.getForObject(getRootUrl() + "/users", User.class);
+
+        Assert.assertEquals(null, deleteUser.getId());
+        Assert.assertEquals(null, deleteUser.getName());
+        Assert.assertEquals(null, deleteUser.getEmail());
+        Assert.assertEquals(null, deleteUser.getAge());
+        Assert.assertEquals(null, deleteUser.getDate());
+    }
+
+    String getRootUrl() {
+        return "http://localhost:" + port;
     }
 }
