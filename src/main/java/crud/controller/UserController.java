@@ -2,7 +2,12 @@ package crud.controller;
 
 import crud.model.User;
 import crud.service.UserService;
+
 import lombok.AllArgsConstructor;
+
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,26 +19,26 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User create(@RequestBody User user) {
-        return service.create(user);
+    public EntityModel<User> create(@RequestBody User user) {
+        return toHateoEntityModel(service.create(user));
     }
 
     @PostMapping("/email")
     @ResponseStatus(HttpStatus.CREATED)
-    public User createEmail(@RequestBody User user) {
-        return service.createEmail(user);
+    public EntityModel<User> createEmail(@RequestBody User user) {
+        return toHateoEntityModel(service.createEmail(user));
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public User update(@RequestBody User user) {
-        return service.update(user);
+    public EntityModel<User> update(@RequestBody User user) {
+        return toHateoEntityModel(service.update(user));
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public User read(@PathVariable(name = "id") Integer id) {
-        return service.read(id);
+    public EntityModel<User> read(@PathVariable(name = "id") Integer id) {
+        return toHateoEntityModel(service.read(id));
     }
 
     @DeleteMapping
@@ -44,7 +49,15 @@ public class UserController {
 
     @DeleteMapping("/email")
     @ResponseStatus(HttpStatus.OK)
-    public User deleteMail(@RequestBody User user) {
-        return service.deleteEmail(user);
+    public EntityModel<User> deleteMail(@RequestBody User user) {
+        return toHateoEntityModel(service.deleteEmail(user));
+    }
+
+    private EntityModel<User> toHateoEntityModel(User user) {
+        Link link = WebMvcLinkBuilder
+                .linkTo(WebMvcLinkBuilder.methodOn(UserController.class).read(user.getId()))
+                .withSelfRel();
+
+        return EntityModel.of(user, link);
     }
 }
