@@ -3,6 +3,7 @@ package crud.controller;
 import crud.model.User;
 import crud.service.UserService;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -13,6 +14,8 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @AllArgsConstructor
@@ -44,10 +47,15 @@ public class UserController {
 
     @Tag(name = "get", description = "GET-Methods User API")
     @Operation(summary = "Get user", description = "Return got user object")
+    @CircuitBreaker(name = "userService", fallbackMethod = "fallbackRead")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<User> read(@PathVariable(name = "id") Integer id) {
         return toHateoEntityModel(service.read(id));
+    }
+
+    public User fallbackRead(Integer id) {
+        return new User(id, "unknown", "unknown", 0, LocalDate.now());
     }
 
     @Tag(name = "delete", description = "DELETE-Methods User API")
