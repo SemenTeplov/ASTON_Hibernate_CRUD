@@ -13,22 +13,27 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
+import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -38,10 +43,18 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext
-@EmbeddedKafka(partitions = 1, topics = {"user-created-events-topic", "user-deleted-events-topic"})
+@SpringJUnitConfig
+@SpringBootTest
+@EmbeddedKafka(ports = 9092, partitions = 1, topics = {"user-created-events-topic", "user-deleted-events-topic"})
 public class ApplicationKafkaTests {
     @Autowired
     private EmbeddedKafkaBroker embeddedKafka;
+
+    @Autowired
+    KafkaTemplate<Integer, String> template;
+
+    @Autowired
+    ConsumerFactory<Integer, String> factory;
 
     @Autowired
     UserService service;
